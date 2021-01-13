@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button } from 'react-native';
 
 // Load Feed Button
 
@@ -13,24 +13,20 @@ const Header = () => {
 
   return (
   <SafeAreaView style={{backgroundColor:'white'}}>  
-    <View style={{ height: 50, backgroundColor: 'white', flexDirection:'row'}}>
+    <View style={{alignItems:'center', height: 50, backgroundColor: 'white', flexDirection:'row', justifyContent:'center'}}>
 
       <View style={{flex:1, backgroundColor:'red'}}>
-        <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20}}>
+        <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20, alignSelf:'flex-start'}}>
           YouTube
         </Text>
       </View>
-
-      <View>
-        <TextInput style={{flex:1, backgroundColor:'lightgray',width:100}}
-
-        />
-      </View>
       
-      <View>
-        <TouchableOpacity style={{flex:1, backgroundColor:'green', width:30, height:30}}
-        />
+      <View style={{flex:1, backgroundColor:'green',}}>
+        <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => console.log('search was pressed') }> 
+          <Image style={{width:30, height:30}} source={require('./assets/favicon.png')} />
+        </TouchableOpacity>
       </View>
+
     </View>
   </SafeAreaView>
   );
@@ -38,13 +34,13 @@ const Header = () => {
 let url = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=20&key=AIzaSyC0U9QWdWNITVbiO5NrgnkKPqMc1rxt4eI'
 
 const dummyData = [
-  {id:1, title:'First Title', url:require('./assets/icon.png')},
-  {id:2, title:'Second Title', url:require('./assets/icon.png')},
-  {id:3, title:'Third Title', url:require('./assets/icon.png')},
-  {id:4, title:'Forth Title', url:require('./assets/icon.png')},
-  {id:5, title:'Fifth Title', url:require('./assets/icon.png')},
-  {id:6, title:'Sixth Title', url:require('./assets/icon.png')},
-  {id:7, title:'Seventh Title', url:require('./assets/icon.png')},
+  {id:1, channel:'youtuber', title:'First Title', url:require('./assets/icon.png')},
+  {id:2, channel:'youtuber', title:'Second Title', url:require('./assets/icon.png')},
+  {id:3, channel:'youtuber', title:'Third Title', url:require('./assets/icon.png')},
+  {id:4, channel:'youtuber', title:'Forth Title', url:require('./assets/icon.png')},
+  {id:5, channel:'youtuber', title:'Fifth Title', url:require('./assets/icon.png')},
+  {id:6, channel:'youtuber', title:'Sixth Title', url:require('./assets/icon.png')},
+  {id:7, channel:'youtuber', title:'Seventh Title', url:require('./assets/icon.png')},
 ]
 
 
@@ -52,7 +48,7 @@ const DummyListExample = () => {
   return (
     <View>
       <FlatList
-        style={{backgroundColor:'yellow' ,width:'100%'}}
+        style={{backgroundColor:'black' ,width:'100%'}}
         data={dummyData}
         renderItem={({ item }) => {
           return (
@@ -66,7 +62,98 @@ const DummyListExample = () => {
                     {item.title}
                   </Text>
                   <Text>
-                    {item.url}
+                    {item.channel}
+                  </Text>
+
+              </View>
+            </View>
+          );
+        }}
+      />
+    </View>
+  )
+}
+
+const Feed = () => {
+
+const [listData, setListData] = useState([]);
+
+  const fetchData = () => {
+
+    /*
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        let dataResult = [];
+
+        data.forEach(item => {
+          let results = {title: item.title, id: item.id};
+          dataResult.push(results);
+        });
+        
+        setData(dataResult);
+        console.log(dataResult)
+      })
+        
+    fetch(url)
+      .then(response => response.json())
+      .then(json => {
+      //use json result to form data array
+      //setData(fetchedDataArray)
+        let dataResults = [];
+        json.forEach((item) => {
+          let results = {title: item.title, id: item.id };
+          dataResults.push(results);
+        
+        });
+        setData(dataResults);
+        console.log(dataResults)
+    });
+    */
+  };
+
+  const getYouTubeDataWithFetch = async () => {
+
+    const response = await fetch(url);
+    const jsonData = await response.json();
+    let dataResult = []
+    try {
+      jsonData.forEach(item => {
+        let results = { title: item.title, id: item.id }
+        dataResult.push(results)
+        console.log(results);
+
+      });
+      setListData(dataResult);
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  };
+
+
+  return (
+    <View>
+      <Button title='Load' onPress={getYouTubeDataWithFetch}
+      />
+      <FlatList
+        style={{backgroundColor:'black' ,width:'100%'}}
+        data={dummyData}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => {
+          return (
+            <View>
+                <View style={{ backgroundColor: '#529FF3', margin:10 ,width:400}}>
+                  <Image
+                    source={item.url}
+                    style={{ height: 200, width: 400 }}
+                  />
+                  <Text>
+                    {item.title}
+                  </Text>
+                  <Text>
+                    {item.id}
                   </Text>
 
               </View>
@@ -117,7 +204,8 @@ export default function App() {
     <View style={styles.container}>
       {/*<NetworkDataExample></NetworkDataExample>*/}
       <Header></Header>
-      <DummyListExample></DummyListExample>
+      <Feed></Feed>
+      {/*<DummyListExample></DummyListExample>*/}
     </View>
   );
 }
