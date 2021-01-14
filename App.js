@@ -9,28 +9,6 @@ import { FlatList, SafeAreaView, StyleSheet, Text, View, Image, TextInput, Touch
 
 //let url = 'https://jsonplaceholder.typicode.com/posts'
 
-const Header = () => {
-
-  return (
-  <SafeAreaView style={{backgroundColor:'white'}}>  
-    <View style={{alignItems:'center', height: 50, backgroundColor: 'white', flexDirection:'row', justifyContent:'center'}}>
-
-      <View style={{flex:1, backgroundColor:'red'}}>
-        <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20, alignSelf:'flex-start'}}>
-          YouTube
-        </Text>
-      </View>
-      
-      <View style={{flex:1, backgroundColor:'green',}}>
-        <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => console.log('search was pressed') }> 
-          <Image style={{width:30, height:30}} source={require('./assets/favicon.png')} />
-        </TouchableOpacity>
-      </View>
-
-    </View>
-  </SafeAreaView>
-  );
-};
 let url = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=20&key=AIzaSyC0U9QWdWNITVbiO5NrgnkKPqMc1rxt4eI'
 
 const dummyData = [
@@ -44,6 +22,34 @@ const dummyData = [
 ]
 
 
+const search = require("./assets/search.png")
+const close = require("./assets/close.png")
+const confirm = require("./assets/confirm.png")
+
+const Header = () => {
+
+  return (
+  <SafeAreaView style={{backgroundColor:'white'}}>  
+    <View style={{alignItems:'center', height: 50, flexDirection:'row', justifyContent:'center'}}>
+
+      <View style={{flex:1}}>
+        <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20, alignSelf:'flex-start'}}>
+          YouTube
+        </Text>
+      </View>
+      
+      <View style={{flex:1}}>
+        <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => console.log('search was pressed') }> 
+          <Image style={{width:30, height:30}} source={search} />
+        </TouchableOpacity>
+      </View>
+
+    </View>
+  </SafeAreaView>
+  );
+};
+
+
 const DummyListExample = () => {
   return (
     <View>
@@ -52,8 +58,8 @@ const DummyListExample = () => {
         data={dummyData}
         renderItem={({ item }) => {
           return (
-            <View>
-                <View style={{ backgroundColor: '#529FF3', margin:10 ,width:400}}>
+            <View style={styles.videoView}>
+                <View style={{ backgroundColor: '#529FF3', margin:10 ,width:'100%'}}>
                 <Image
                     source={item.url}
                     style={{ height: 200, width: 400 }}
@@ -74,137 +80,55 @@ const DummyListExample = () => {
   )
 }
 
-const Feed = () => {
+const YoutubeListFeed = () => {
 
 const [listData, setListData] = useState([]);
+const [isVisible, setIsVisible] = useState(true)
 
-  const fetchData = () => {
-
-    /*
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        let dataResult = [];
-
-        data.forEach(item => {
-          let results = {title: item.title, id: item.id};
-          dataResult.push(results);
+    const fetchData = () => {
+      fetch(url)
+        .then((response) => response.json())
+        .then((json) => {
+          let dataResults = [];
+          json.items.forEach((item) => {
+            let result = { title: item.snippet.title, channel: item.snippet.channelTitle, imageUrl: item.snippet.thumbnails.standard.url };
+            dataResults.push(result);
+          });
+          setListData(dataResults);
         });
-        
-        setData(dataResult);
-        console.log(dataResult)
-      })
-        
-    fetch(url)
-      .then(response => response.json())
-      .then(json => {
-      //use json result to form data array
-      //setData(fetchedDataArray)
-        let dataResults = [];
-        json.forEach((item) => {
-          let results = {title: item.title, id: item.id };
-          dataResults.push(results);
-        
-        });
-        setData(dataResults);
-        console.log(dataResults)
-    });
-    */
-  };
-
-  const getYouTubeDataWithFetch = async () => {
-
-    const response = await fetch(url);
-    const jsonData = await response.json();
-    let dataResult = []
-    try {
-      jsonData.forEach(item => {
-        let results = { title: item.title, id: item.id }
-        dataResult.push(results)
-        console.log(results);
-
-      });
-      setListData(dataResult);
-
-    } catch (error) {
-      console.log(error)
-    }
-
-  };
-
-
+    };
+  
   return (
     <View>
-      <Button title='Load' onPress={getYouTubeDataWithFetch}
-      />
+      {isVisible ? (<Button title="Fetch Data" onPress={() => {
+        fetchData();
+        setIsVisible(!isVisible);
+      }}/>) : null}
+
       <FlatList
-        style={{backgroundColor:'black' ,width:'100%'}}
-        data={dummyData}
-        keyExtractor={(item) => item.id.toString()}
+        style={{width:'100%'}}
+        data={listData}
         renderItem={({ item }) => {
           return (
-            <View>
-                <View style={{ backgroundColor: '#529FF3', margin:10 ,width:400}}>
-                  <Image
-                    source={item.url}
-                    style={{ height: 200, width: 400 }}
-                  />
-                  <Text>
-                    {item.title}
-                  </Text>
-                  <Text>
-                    {item.id}
-                  </Text>
-
-              </View>
+            <View style={{width:'100%', paddingBottom:10}}>
+              <Image source={{uri: item.imageUrl}} style={{ height: 200, width: '100%', marginBottom:10 }} />
+              <Text style={{paddingLeft: 5, fontWeight:'bold'}} >{item.title}</Text>
+              <Text style={{paddingLeft: 5, color:'#808080'}} >{item.channel}</Text>
             </View>
           );
         }}
+        keyExtractor={(item) => item.title.toString()}
+
       />
     </View>
   )
 }
 
-/*
-const NetworkDataExample = () => {
-  const [data, setData] = useState([]);
-
-  const fetchData = () => {
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        // console.log('json results:', json);
-        let dataResults = [];
-        json.forEach((item) => {
-          let result = { title: item.title, id: item.id };
-          dataResults.push(result);
-        });
-        setData(dataResults);
-        console.log(dataResults)
-      });
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Button title="Fetch Data" onPress={fetchData} />
-
-      <FlatList
-        data={data}
-        renderItem={({ item }) => <Text>{item.title}</Text>}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </SafeAreaView>
-  );
-};
-*/
-
-
 export default function App() {
   return (
     <View style={styles.container}>
-      {/*<NetworkDataExample></NetworkDataExample>*/}
       <Header></Header>
-      <Feed></Feed>
+      <YoutubeListFeed />
       {/*<DummyListExample></DummyListExample>*/}
     </View>
   );
@@ -214,9 +138,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    //alignItems: 'center',
-    //justifyContent: 'center',
     width:'100%',
     height:'100%',
+  },
+
+  videoView: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: "flex-start",
+    marginBottom: 25,
   },
 });
