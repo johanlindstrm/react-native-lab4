@@ -49,6 +49,19 @@ const Header = () => {
   );
 };
 
+const SearchHeader = (listData, setListData) => {
+  // Todo
+    // TextInput
+    // Handle the search text
+    // Track input from the user
+    // Filter through the list of data
+  return(
+    <View>
+
+    </View>
+  )
+}
+
 
 const DummyListExample = () => {
   return (
@@ -81,9 +94,8 @@ const DummyListExample = () => {
 }
 
 const YoutubeListFeed = () => {
-
-const [listData, setListData] = useState([]);
-const [isVisible, setIsVisible] = useState(true)
+  const [listData, setListData] = useState([]);
+  const [isVisible, setIsVisible] = useState(true)
 
     const fetchData = () => {
       fetch(url)
@@ -125,11 +137,11 @@ const [isVisible, setIsVisible] = useState(true)
 }
 
 export default function App() {
+
   return (
     <View style={styles.container}>
-      <Header></Header>
+      <Header />
       <YoutubeListFeed />
-      {/*<DummyListExample></DummyListExample>*/}
     </View>
   );
 }
