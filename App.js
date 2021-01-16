@@ -27,36 +27,86 @@ const close = require("./assets/close.png")
 const confirm = require("./assets/confirm.png")
 
 const Header = () => {
-
+  const [searching, setSearching] = useState(false);
   return (
   <SafeAreaView style={{backgroundColor:'white'}}>  
-    <View style={{alignItems:'center', height: 50, flexDirection:'row', justifyContent:'center'}}>
 
-      <View style={{flex:1}}>
-        <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20, alignSelf:'flex-start'}}>
-          YouTube
-        </Text>
-      </View>
-      
-      <View style={{flex:1}}>
-        <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => console.log('search was pressed') }> 
-          <Image style={{width:30, height:30}} source={search} />
-        </TouchableOpacity>
-      </View>
+    {searching ?
+    <SearchHeader setSearching={setSearching} searching={searching} /> 
+    : <DefaultHeader setSearching={setSearching} searching={searching}/>
+    }
 
-    </View>
+   {/* <DefaultHeader />*/}
+   {/* <SearchHeader />*/}
   </SafeAreaView>
   );
 };
 
-const SearchHeader = (listData, setListData) => {
+
+const DefaultHeader = ({setSearching, searching}) => {
+  return (
+    <View style={{alignItems:'center', height: 50, flexDirection:'row', justifyContent:'center'}}>
+
+    <View style={{flex:1}}>
+      <Text style={{fontSize:20, fontWeight:'bold', paddingLeft:20, alignSelf:'flex-start'}}>
+        YouTube
+      </Text>
+    </View>
+    
+    <View style={{flex:1}}>
+      <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => {setSearching(!searching);}}> 
+        <Image style={{width:30, height:30}} source={search} />
+      </TouchableOpacity>
+    </View>
+
+  </View>
+  )
+}
+
+const SearchHeader = ({listData, setListData, setSearching, searching}) => {
   // Todo
     // TextInput
     // Handle the search text
     // Track input from the user
     // Filter through the list of data
+/*  const [query, setQuery] = useState('');
+
+  const handleSearch = text => {
+    const formattedQuery = text.toLowerCase();
+    const filteredData = filter(listData, video => {
+      return contains(video, formattedQuery);
+    });
+    setData(filteredData);
+    setQuery(text);
+  };
+  */
+
   return(
-    <View>
+    <View style={{alignItems:'center', height: 50, flexDirection:'row', justifyContent:'center'}}>
+      
+      <View style={{flex:1}}>
+        <TouchableOpacity style={{marginLeft:20, alignSelf:'flex-start'}} onPress={() => {setSearching(!searching);}}> 
+          <Image style={{width:15, height:15}} source={close} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{flex:1}}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="always"
+          //value={query}
+          //onChangeText={queryText => handleSearch(queryText)}
+          placeholder="Search"
+          style={{ backgroundColor: '#fff', paddingHorizontal: 10 }}
+          />
+      </View>
+
+      <View style={{flex:1}}>
+        <TouchableOpacity style={{marginRight:20, alignSelf:'flex-end'}} onPress={() => console.log('search was pressed') }> 
+          <Image style={{width:30, height:30}} source={confirm} />
+        </TouchableOpacity>
+      </View>
 
     </View>
   )
@@ -123,7 +173,7 @@ const YoutubeListFeed = () => {
         renderItem={({ item }) => {
           return (
             <View style={{width:'100%', paddingBottom:10}}>
-              <Image source={{uri: item.imageUrl}} style={{ height: 200, width: '100%', marginBottom:10 }} />
+              <Image source={{uri: item.imageUrl}} style={{ height: 240, width: '100%', marginBottom:10 }} />
               <Text style={{paddingLeft: 5, fontWeight:'bold'}} >{item.title}</Text>
               <Text style={{paddingLeft: 5, color:'#808080'}} >{item.channel}</Text>
             </View>
